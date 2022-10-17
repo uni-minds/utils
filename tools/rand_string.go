@@ -10,10 +10,12 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 
 var r = rand.New(rand.NewSource(time.Now().Unix()))
+var mu sync.Mutex
 
 const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -44,7 +46,9 @@ func RandStringFromAlphabet(length int, alphabet string) string {
 
 	bs := make([]byte, length)
 	for i := 0; i < length; i++ {
+		mu.Lock()
 		b := r.Intn(alphaLen)
+		mu.Unlock()
 		bs[i] = alphabet[b]
 	}
 	return string(bs)

@@ -7,10 +7,27 @@
 
 package tools
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestExpandInterface(t *testing.T) {
 	data := []interface{}{"%s", "a", "b", "c"}
 	str := InterfaceExpand(data)
 	t.Log(str)
+}
+
+func TestRandString0f(t *testing.T) {
+	for g := 0; g < 50; g++ {
+		go func(w int) {
+			for i := 0; i < 100; i++ {
+				t.Log(w, RandString0f(4+w*2))
+				//time.Sleep(10*time.Millisecond)
+			}
+		}(g)
+	}
+
+	time.Sleep(3 * time.Second)
+	t.Log("Stop")
 }
