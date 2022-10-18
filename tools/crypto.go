@@ -103,7 +103,7 @@ func RsaSha256SignHash(hash string) (signature, pubKey string, err error) {
 
 func RsaSha256Sign(i interface{}) (signature, pubKey string, err error) {
 	bs, _ := json.Marshal(i)
-	h := GetBytesChecksum(bs, "sha256")
+	h := GetBytesChecksum(bs, ModeChecksumSHA256)
 	return RsaSha256SignHash(h)
 }
 
@@ -127,6 +127,6 @@ func RsaSha256VerifyHash(hash, signature, pubKey string) bool {
 
 func RsaSha256Verify(i interface{}, signature, pubKey string) bool {
 	bs, _ := json.Marshal(i)
-	h := GetBytesChecksum(bs, "sha256")
+	h := GetBytesChecksum(bs, ModeChecksumSHA256)
 	return RsaSha256VerifyHash(h, signature, pubKey)
 }

@@ -15,7 +15,7 @@ func TestRsaGenKeyPair(t *testing.T) {
 	RsaGenKeypair()
 	//t.Log(gotPriKey)
 	//t.Log(gotPubKey)
-	tmp := GetStringChecksum("abcd", "sha256")
+	tmp := GetStringChecksum("abcd", ModeChecksumSHA256)
 	t.Log(tmp)
 	s, p, err := RsaSha256SignHash(tmp)
 	t.Log(s, p, err)

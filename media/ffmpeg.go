@@ -59,6 +59,7 @@ func ConvertFormat(srcInfo, descInfo MediaInfo) error {
 
 	case MP4V:
 		kv2["vf"] = "pad=ceil(iw/2)*2:ceil(ih/2)*2"
+		kv2["pix_fmt"] = "yuv420p"
 
 	default:
 	}

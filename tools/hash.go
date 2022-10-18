@@ -10,60 +10,69 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"fmt"
+	"hash"
 	"io"
 	"os"
-	"strings"
+	"syscall"
 )
 
-func FileGetMD5(path string) (checksum string, err error) {
-	file, err := os.Open(path)
+type ModeChecksum uint
+
+const (
+	ModeChecksumMD5    ModeChecksum = iota
+	ModeChecksumSHA256 ModeChecksum = iota
+)
+
+func GetChecksum(i interface{}, mode ModeChecksum) string {
+	switch i.(type) {
+	case string:
+		return GetStringChecksum(i.(string), mode)
+	case []byte:
+		return GetBytesChecksum(i.([]byte), mode)
+	default:
+		return ""
+	}
+}
+
+func GetStringChecksum(str string, mode ModeChecksum) string {
+	return GetBytesChecksum([]byte(str), mode)
+}
+
+func GetBytesChecksum(bs []byte, m ModeChecksum) string {
+	switch m {
+	case ModeChecksumSHA256:
+		h := sha256.New()
+		h.Write(bs)
+		return fmt.Sprintf("%x", h.Sum(nil))
+
+	case ModeChecksumMD5:
+		h := md5.New()
+		h.Write(bs)
+		return fmt.Sprintf("%x", h.Sum(nil))
+
+	default:
+		return ""
+	}
+}
+
+func GetFileChecksum(path string, m ModeChecksum) (string, error) {
+	file, err := os.OpenFile(path, syscall.O_RDONLY, 0644)
 	if err != nil {
-		return
+		return "", err
 	}
 	defer file.Close()
 
-	h := md5.New()
+	var h hash.Hash
+	switch m {
+	case ModeChecksumMD5:
+		h = md5.New()
+	case ModeChecksumSHA256:
+		h = sha256.New()
+	}
+
 	if _, err = io.Copy(h, file); err != nil {
 		return "", err
 	} else {
 		return fmt.Sprintf("%x", h.Sum(nil)), nil
 	}
-}
-
-func FileCheckMD5(fullpath string, checksum string) (ok bool) {
-	target, err := FileGetMD5(fullpath)
-	if err != nil {
-		fmt.Println("e", "get md5:", fullpath)
-		return false
-	} else {
-		fmt.Println("d", "target checksum:", target)
-		return target == checksum
-	}
-}
-
-func GetBytesChecksum(bs []byte, m string) string {
-	switch strings.ToLower(m) {
-	case "sha256":
-		h := sha256.New()
-		h.Write(bs)
-		return fmt.Sprintf("%x", h.Sum(nil))
-
-	default:
-		h := md5.New()
-		h.Write(bs)
-		return fmt.Sprintf("%x", h.Sum(nil))
-
-	}
-}
-
-func GetStringChecksum(str string, m string) string {
-	return GetBytesChecksum([]byte(str), m)
-}
-
-func GetStringMD5(str string) string {
-	return GetBytesChecksum([]byte(str), "md5")
-}
-
-func GetBytesMD5(bs []byte) string {
-	return GetBytesChecksum(bs, "md5")
 }

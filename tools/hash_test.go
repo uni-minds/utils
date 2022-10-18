@@ -10,5 +10,6 @@ import "testing"
 
 func TestGetStringMD5(t *testing.T) {
 	str := "B317-2021123109292773-2000010112000000-AA.mp4"
-	t.Log(GetStringMD5(str))
+	t.Log(GetStringChecksum(str, ModeChecksumMD5))
+	t.Log(GetStringChecksum(str, ModeChecksumSHA256))
 }
