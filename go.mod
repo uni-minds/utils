@@ -1,6 +1,6 @@
-module gitee.com/uni-minds/utils
+module github.com/uni-minds/utils
 
-go 1.19
+go 1.18
 
 require (
 	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
